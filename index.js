@@ -80,9 +80,15 @@ export function decompressData({interned_strings, columns}, objectFn) {
     	let data;
         if (column.type === 'delta') {
             let val = 0;
-            data = column.data.map(d => d === null ? null : (val += d) / column.multiplier);
+            data = Array(column.data.length);
+            for (let i=0; i<column.data.length; i++) {
+            	data[i] = column.data[i] === null ? null : (val += column.data[i]) / column.multiplier;
+			}
         } else if (column.type === 'interned_string') {
-            data = column.data.map(d => interned_strings[d]);
+            data = Array(column.data.length);
+            for (let i=0; i<column.data.length; i++) {
+            	data[i] = interned_strings[column.data[i]];
+			}
         } else {
         	data = column.data;
 		}
