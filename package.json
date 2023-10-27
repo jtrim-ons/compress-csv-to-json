@@ -1,6 +1,6 @@
 {
 	"name": "compress-csv-to-json",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "An experimental module for converting CSV to column-oriented JSON, with optional delta compression and string interning",
 	"license": "MIT",
 	"repository": "jtrim-ons/compress-csv-to-json",
