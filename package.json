@@ -1,13 +1,13 @@
 {
-	"name": "unicorn-fun",
+	"name": "compress-csv-to-json",
 	"version": "0.0.0",
-	"description": "My awesome module",
+	"description": "An experimental module for converting CSV to column-oriented JSON, with optional delta compression and string interning",
 	"license": "MIT",
-	"repository": "YOUR-GITHUB-USERNAME/unicorn-fun",
+	"repository": "jtrim-ons/compress-csv-to-json",
 	"author": {
-		"name": "YOUR NAME",
-		"email": "YOUR EMAIL",
-		"url": "YOUR WEBSITE"
+		"name": "James Trimble",
+		"email": "jtrim.ons@gmail.com",
+		"url": "github.com/jtrim-ons"
 	},
 	"type": "module",
 	"exports": "./index.js",
@@ -21,8 +21,6 @@
 		"index.js"
 	],
 	"keywords": [
-		"unicorn",
-		"fun"
 	],
 	"dependencies": {},
 	"devDependencies": {
