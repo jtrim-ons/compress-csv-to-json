@@ -63,10 +63,7 @@ export function compressData(lines, column_types) {
 }
 
 export function decompressData({interned_strings, columns}, objectFn) {
-    const dummyDataForChecking = columns.map(column => ({
-        name: column.name,
-        data: [column.name]
-    }))
+    const dummyDataForChecking = columns.map(column => [column.name]);
     const dataToCheck = objectFn(dummyDataForChecking, 0);
     if (Object.entries(dataToCheck).length !== columns.length) {
         throw new Error("Incorrect objectFn: number of fields doesn't match number of columns.")
@@ -77,29 +74,27 @@ export function decompressData({interned_strings, columns}, objectFn) {
         }
     }
 
-    // note: this modifies columns.
+    const columnData = [];
+
     for (const column of columns) {
+    	let data;
         if (column.type === 'delta') {
             let val = 0;
-            for (let i=0; i<column.data.length; i++) {
-                if (column.data[i] !== null) {
-                    val += column.data[i];
-                    column.data[i] = val / column.multiplier;
-                }
-            }
+            data = column.data.map(d => d === null ? null : (val += d) / column.multiplier);
         } else if (column.type === 'interned_string') {
-            for (let i=0; i<column.data.length; i++) {
-                column.data[i] = interned_strings[column.data[i]];
-            }
-        }
+            data = column.data.map(d => interned_strings[d]);
+        } else {
+        	data = column.data;
+		}
+    	columnData.push(data);
     }
-    
+
     // d3.dsv has a fancy objectConverter function for speed,
     // https://github.com/d3/d3-dsv/blob/a2facce660bb4895b56c62a655d0f252efc3d99f/src/dsv.js#L7-L11
     // but it creates a new function from a string in a way that I'm nervous about
-    
-    const decompressedData = columns[0].data.map((_, rowNumber) => objectFn(columns, rowNumber));
-    
+
+    const decompressedData = columns[0].data.map((_, rowNumber) => objectFn(columnData, rowNumber));
+
     decompressedData.columns = columns.map(d => d.name);
 
     return decompressedData;
