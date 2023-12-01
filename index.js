@@ -42,11 +42,11 @@ export function compressData(lines, columnTypes) {
 			if (colType === 'interned_string') {
 				const s = line[key];
 				if (!(s in internedStrings)) {
-					internedStrings[s] = internedStringsLength;
-					internedStringsLength++;
+					internedStrings[s] = {string: s, count: 1};
+					++internedStringsLength;
+				} else {
+					++internedStrings[s].count;
 				}
-
-				line[key] = internedStrings[s];
 			} else if (colType === 'int' || colType === 'float') {
 				line[key] = Number(line[key]);
 			} else if (colType !== 'string') {
@@ -55,13 +55,25 @@ export function compressData(lines, columnTypes) {
 		}
 	}
 
+	const internedStringsArray = Array.from({length: internedStringsLength});
+	Object.keys(internedStrings)
+		.map(key => internedStrings[key])
+		.sort((a, b) => b.count - a.count)
+		.forEach((d, i) => {
+			internedStrings[d.string] = i;
+			internedStringsArray[i] = d.string;
+		});
+
+	for (const line of lines) {
+		for (const {key, colType} of columnTypes) {
+			if (colType === 'interned_string') {
+				line[key] = internedStrings[line[key]];
+			}
+		}
+	}
+
 	multiplyAndDeltaEncode(lines, columnTypes);
 	const dataByColumn = getDataByColumn(lines, columnTypes);
-
-	const internedStringsArray = Array.from({length: internedStringsLength});
-	for (const [s, i] of Object.entries(internedStrings)) {
-		internedStringsArray[i] = s;
-	}
 
 	return {internedStrings: internedStringsArray, columns: dataByColumn};
 }
