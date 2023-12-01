@@ -123,3 +123,14 @@ export function decompressData({internedStrings, columns}, objectFn) {
 
 	return decompressedData;
 }
+
+export function generateDecompressionCode(columnNames) {
+	let result = 'const decompressedData = decompressData(compressedData, (columnData, rowNumber) => ({\n';
+	for (let i=0; i<columnNames.length; i++) {
+		const name = columnNames[i];
+		result += `    ${name}: columnData[${i}][rowNumber],\n`;
+	}
+
+	result += '}));'
+	return result;
+}
